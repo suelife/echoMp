@@ -1,5 +1,6 @@
 // Import require Package
 const { ComponentDialog, DialogSet, DialogTurnStatus, WaterfallDialog, TextPrompt, NumberPrompt} = require('botbuilder-dialogs');
+const { CardFactory, MessageFactory } = require('botbuilder');
 const { UserInfo } = require('./Resource/userInfo')
 
 // Define the property accessors.
@@ -21,9 +22,9 @@ class MainDialog extends ComponentDialog {
 
         // Create WaterfallDialog
         this.addDialog(new WaterfallDialog(BOT_PROMPT, [
-            this.initializeStateStep.bind(this),
-            this.testStep.bind(this),
-            this.testStep2.bind(this)
+            this.checkpidStep.bind(this),
+            this.testStep.bind(this)
+            // this.testStep2.bind(this)
         ]))
 
         // Set initialDialogId
@@ -32,8 +33,6 @@ class MainDialog extends ComponentDialog {
 
     // Running MainDialog
     async run(turnContext) {
-        await turnContext.sendActivity(`I say '${ turnContext.activity.text }' too`)
-
         // Create DialogSet Object
         const dialogSet = new DialogSet(this.dialogStateAccessor)
         dialogSet.add(this)
@@ -61,30 +60,59 @@ class MainDialog extends ComponentDialog {
         }
     }
 
-    async initializeStateStep(stepContext) {
-        console.log("userInfo ", stepContext)
-        const userInfo = await this.userProfileAccessor.get(stepContext.context)
-        console.log("userInfo ", userInfo)
-        // console.log("initializeStateStep stepContext", stepContext.context)
-        // let userInfo = await this.userProfileAccessor.get(stepContext.context)
-        // await this.userProfileAccessor.set(stepContext.context, new UserInfo())
-        // if (userInfo === undefined) {
-        //     if (stepContext.options && stepContext.options.userInfo) {
-        //         await this.userProfileAccessor.set(stepContext.context, stepContext.options.userInfo);
-        //     } else {
-        //         await this.userProfileAccessor.set(stepContext.context, new UserInfo());
-        //     }
-        // } 
-        return await stepContext.next()
+    // Check user enter is number or not(default is number)
+    async checkpidStep(stepContext) {
+        let cknum = stepContext.context.activity.text
+        if (isNaN(cknum)) {
+            await stepContext.context.sendActivity("產品編號錯誤")
+            await stepContext.context.sendActivity("請輸入產品編號")
+            await stepContext.context.sendActivities([
+                { type: 'typing' },
+                { type: 'delay', value: 1000 }
+            ]);
+            await stepContext.context.sendActivity("你說你不知道商品編號是什麼意思???")
+            await stepContext.context.sendActivities([
+                { type: 'typing' },
+                { type: 'delay', value: 1000 }
+            ]);
+            await stepContext.context.sendActivity("怪我喔??")
+            await stepContext.context.sendActivities([
+                { type: 'typing' },
+                { type: 'delay', value: 1000 }
+            ]);
+            await stepContext.context.sendActivity("不會去問商家阿!!!")
+            return await stepContext.endDialog()
+        } else {
+            await stepContext.context.sendActivity("正在搜尋該商品")
+            await stepContext.context.sendActivities([
+                { type: 'typing' },
+                { type: 'delay', value: 1000 }
+            ]);
+            return await stepContext.next()
+        }
     }
 
     async testStep(stepContext) {
-        const userInfo = await this.userProfileAccessor.get(stepContext.context)
-        if (userInfo == undefined && stepContext.result) {
-            console.log("1")
-        }else{
-            console.log("2")
-        }
+        const card = CardFactory.adaptiveCard({
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+               "type": "AdaptiveCard",
+               "version": "1.0",
+               "body": [
+                   {
+                      "type": "TextBlock",
+                      "text": "Default text input"
+                   }
+               ],
+               "actions": [
+                   {
+                      "type": "Action.Submit",
+                      "title": "OK"
+                   }
+               ]
+        });
+
+        await stepContext.context.sendActivity({ attachment : card })
+        await stepContext.context.sendActivity("WTF???")
         return await stepContext.endDialog()
     }
 
