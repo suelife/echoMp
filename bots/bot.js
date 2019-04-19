@@ -37,6 +37,10 @@ class MpBot extends ActivityHandler {
         this.onMessage(async turnContext => {
             await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`)
             await mainDialog.run(turnContext)
+
+            // Save any state changes. The load happened during the execution of the Dialog.
+            await this.conversationState.saveChanges(turnContext, false);
+            await this.userState.saveChanges(turnContext, false);
         })
     }
 }
