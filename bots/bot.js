@@ -1,0 +1,60 @@
+// Import require Package
+const { ActivityTypes, ActivityHandler } = require('botbuilder');
+const { MainDialog } = require('../dialogs/mainDialog')
+
+// Define the identifiers for our state property accessors.
+const DIALOG_STATE_PROPERTY = "dialogstateproperty"
+const USER_INFO_PROPERTY = "userinfoproperty"
+
+
+// // await myBot.onTurn(context);
+// class MyBot{
+//     /**
+//      *
+//      * @param {TurnContext} on turn context object.
+//      */
+//     async onTurn(turnContext) {
+//         if (turnContext.activity.type === ActivityTypes.Message) {
+//             await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`);
+//         } else {
+//             await turnContext.sendActivity(`[${ turnContext.activity.type } event detected]`);
+//         }
+//     }
+// }
+
+// // await myBot.run(context);
+class MpBot extends ActivityHandler {
+    constructor(conversationState, userState){
+        super()
+
+        if (!conversationState) throw new Error('[DialogBot]: Missing parameter. conversationState is required');
+        if (!userState) throw new Error('[DialogBot]: Missing parameter. userState is required');
+
+        this.conversationState = conversationState
+        this.userState = userState
+        
+        // Create our state property accessors.
+        this.dialogStateAccessor = conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.userProfileAccessor = userState.createProperty(USER_INFO_PROPERTY);
+
+        const mainDialog = new MainDialog(this.dialogStateAccessor, this.userProfileAccessor)
+
+        // User coming to the bot
+        this.onMembersAdded(async turnContext => {
+            const membersAdded = turnContext.activity.membersAdded
+            for (let cnt = 0; cnt < membersAdded.length; cnt++) {
+                if (membersAdded[cnt].id !== turnContext.activity.recipient.id) {
+                    await turnContext.sendActivity(`Hello you stupid piece of shit`); 
+                }
+            }
+        })
+
+        // User type something to bot
+        this.onMessage(async turnContext => {
+            await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`)
+            await mainDialog.run(turnContext)
+        })
+    }
+}
+
+module.exports.MpBot = MpBot;
