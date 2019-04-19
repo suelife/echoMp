@@ -1,4 +1,4 @@
-const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
+const { ComponentDialog, DialogSet, DialogTurnStatus, WaterfallDialog } = require('botbuilder-dialogs');
 
 // Define the property accessors.
 const BOT_PROMPT = "botPrompt"

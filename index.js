@@ -51,7 +51,6 @@ const mpBot = new MpBot(conversationState, userState);
 server.post('/api/messages', (req, res) => {
     adapter.processActivity(req, res, async (context) => {
         // Route to main dialog.
-        // await myBot.onTurn(context);
         await mpBot.run(context);
     });
 });

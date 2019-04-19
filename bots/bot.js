@@ -6,22 +6,6 @@ const { MainDialog } = require('../dialogs/mainDialog')
 const DIALOG_STATE_PROPERTY = "dialogstateproperty"
 const USER_INFO_PROPERTY = "userinfoproperty"
 
-
-// // await myBot.onTurn(context);
-// class MyBot{
-//     /**
-//      *
-//      * @param {TurnContext} on turn context object.
-//      */
-//     async onTurn(turnContext) {
-//         if (turnContext.activity.type === ActivityTypes.Message) {
-//             await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`);
-//         } else {
-//             await turnContext.sendActivity(`[${ turnContext.activity.type } event detected]`);
-//         }
-//     }
-// }
-
 // // await myBot.run(context);
 class MpBot extends ActivityHandler {
     constructor(conversationState, userState){
