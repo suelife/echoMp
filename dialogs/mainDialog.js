@@ -1,8 +1,7 @@
 // Import require Package
 const { ComponentDialog, DialogSet, DialogTurnStatus, WaterfallDialog, TextPrompt, NumberPrompt} = require('botbuilder-dialogs');
-// const { CardFactory, MessageFactory } = require('botbuilder');
+const { CardFactory, MessageFactory } = require('botbuilder');
 const { UserInfo } = require('./Resource/userInfo')
-const { ActionTypes, ActivityTypes, CardFactory, MessageFactory} = require('botbuilder');
 
 // Define the property accessors.
 const BOT_PROMPT = "botPrompt"
@@ -97,33 +96,15 @@ class MainDialog extends ComponentDialog {
         const userInfo = await this.userProfileAccessor.get(stepContext.context)
         // await stepContext.context.sendActivity("WTF???")
         
-        // build buttons to display.
-        const buttons = [
-                    { type: ActionTypes.ImBack, title: '1. Inline Attachment', value: '1' },
-                    { type: ActionTypes.ImBack, title: '2. Internet Attachment', value: '2' },
-                    { type: ActionTypes.ImBack, title: '3. Uploaded Attachment', value: '3' }
-        ];
-
-        // construct hero card.
-        const card = CardFactory.heroCard('', undefined,
-        buttons, { text: 'You can upload an image or select one of the following choices.' });
-
-        // add card to Activity.
-        const reply = { type: ActivityTypes.Message };
-        reply.attachments = [card];
-
-        // Send hero card to the user.
-        await stepContext.context.sendActivity(reply);
-        
-        const card1 = CardFactory.heroCard(
-            "", undefined, ["1", "2", "3"], { text : "幹你老78"}
+        const card1 = MessageFactory.attachment(
+            CardFactory.heroCard("", undefined, ["1", "2", "3"], { text : ""})
         )
         
-        await stepContext.context.sendActivity({ attachments : [card1]})
+        console.log("card1 :", card1)
 
         const message = MessageFactory.suggestedActions(["小白", "嵇八郎", "趕羚羊"], "選擇姓名")
         if (!userInfo.consignee_name) {
-            await stepContext.context.sendActivity(card)
+            await stepContext.context.sendActivity(card1)
             return await stepContext.prompt(TEXT_PROMPT, message)
         } else {
             return await stepContext.next()
