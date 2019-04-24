@@ -35,7 +35,7 @@ class MpBot extends ActivityHandler {
 
         // User type something to bot
         this.onMessage(async turnContext => {
-            await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`)
+            // await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`)
 
             await mainDialog.run(turnContext)
 

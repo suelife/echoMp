@@ -23,8 +23,8 @@ class MainDialog extends ComponentDialog {
         // Create WaterfallDialog
         this.addDialog(new WaterfallDialog(BOT_PROMPT, [
             this.checkpidStep.bind(this),
-            this.testStep.bind(this)
-            // this.testStep2.bind(this)
+            this.testStep.bind(this),
+            this.testStep2.bind(this)
         ]))
 
         // Set initialDialogId
@@ -93,32 +93,22 @@ class MainDialog extends ComponentDialog {
     }
 
     async testStep(stepContext) {
-        const card = CardFactory.adaptiveCard({
-            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-               "type": "AdaptiveCard",
-               "version": "1.0",
-               "body": [
-                   {
-                      "type": "TextBlock",
-                      "text": "Default text input"
-                   }
-               ],
-               "actions": [
-                   {
-                      "type": "Action.Submit",
-                      "title": "OK"
-                   }
-               ]
-        });
-
-        await stepContext.context.sendActivity({ attachment : card })
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
         await stepContext.context.sendActivity("WTF???")
-        return await stepContext.endDialog()
+        if (!userInfo.consignee_name) {
+            return await stepContext.prompt(TEXT_PROMPT, "輸入姓名")
+        } else {
+            return await stepContext.next()
+        }
     }
 
     async testStep2(stepContext) {
         const userInfo = await this.userProfileAccessor.get(stepContext.context)
-
+        if (userInfo.consignee_name === undefined && stepContext.result) {
+            userInfo.consignee_name = stepContext.result
+        }
+        console.log("userInfo.consignee_name :", userInfo.consignee_name)
+        await stepContext.context.sendActivity(`妳好, ${userInfo.consignee_name}`)
         return await stepContext.endDialog()
     }
 }
