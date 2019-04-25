@@ -18,7 +18,7 @@ dotenv.config({ path: ENV_FILE });
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`\n${ server.name } listening to ${ server.url }`);
-    console.log(`\n url http://localhost:3978/api/messages`);
+    console.log(`\nurl http://localhost:3978/api/messages`);
 });
 
 // Create adapter.
