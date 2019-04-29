@@ -114,6 +114,8 @@ class MainDialog extends ComponentDialog {
             console.log("product_img_dot: ", product_img_dot)
         })
 
+        await stepContext.context.sendActivity("商品名稱: ", product.product_name)
+
         // const message = MessageFactory.suggestedActions(["小白", "嵇八郎", "趕羚羊"], "選擇姓名")
         // if (!userInfo.consignee_name) {
         //     await stepContext.context.sendActivity(card1)
