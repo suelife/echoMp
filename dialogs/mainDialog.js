@@ -93,25 +93,6 @@ class MainDialog extends ComponentDialog {
     }
 
     async testStep(stepContext) {
-        const card = CardFactory.adaptiveCard({
-            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-               "type": "AdaptiveCard",
-               "version": "1.0",
-               "body": [
-                   {
-                      "type": "TextBlock",
-                      "text": "Default text input"
-                   }
-               ],
-               "actions": [
-                   {
-                      "type": "Action.Submit",
-                      "title": "OK"
-                   }
-               ]
-        });
-
-        await stepContext.context.sendActivity({ attachment : card })
         await stepContext.context.sendActivity("WTF???")
         return await stepContext.endDialog()
     }
