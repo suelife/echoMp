@@ -14,21 +14,14 @@ class UserInfo {
     //  purchaser_mail   購買人信箱
     //#endregion
 
-    constructor (plan, specification, pick_up, payment, addr,
-                recipient_name, recipient_phone, recipient_mail,
-                purchaser_name, purchaser_phone, purchaser_mail) 
+    constructor (u_name, u_age, u_phone, u_email, p_sex, p_single) 
     {
-        this.plan = plan || undefined;
-        this.addr = addr || undefined;
-        this.pick_up = pick_up || undefined;
-        this.payment = payment || undefined;
-        this.specification = specification || undefined;
-        this.recipient_name = recipient_name || undefined;
-        this.recipient_phone = recipient_phone || undefined;
-        this.recipient_mail = recipient_mail || undefined;
-        this.purchaser_name = purchaser_name || undefined;
-        this.purchaser_phone = purchaser_phone || undefined;
-        this.purchaser_mail = purchaser_mail || undefined;
+        this.u_name = u_name || undefined;
+        this.u_age = u_age || undefined;
+        this.u_phone = u_phone || undefined;
+        this.u_email = u_email || undefined;
+        this.p_sex = p_sex || undefined;
+        this.p_single = p_single || undefined;
     }
 }
 

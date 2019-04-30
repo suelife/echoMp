@@ -28,7 +28,7 @@ class MpBot extends ActivityHandler {
             const membersAdded = turnContext.activity.membersAdded
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== turnContext.activity.recipient.id) {
-                    await turnContext.sendActivity(`Hello you stupid piece of shit`); 
+                    await turnContext.sendActivity(`Hello`); 
                 }
             }
         })
@@ -36,8 +36,9 @@ class MpBot extends ActivityHandler {
         // User type something to bot
         this.onMessage(async turnContext => {
             await turnContext.sendActivity(`You said '${ turnContext.activity.text }'`)
-
+            console.log("bot run start")
             await mainDialog.run(turnContext)
+            console.log("bot run end")
 
             // Save any state changes. The load happened during the execution of the Dialog.
             await this.conversationState.saveChanges(turnContext, false);

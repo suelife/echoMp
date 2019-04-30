@@ -22,16 +22,16 @@ class MainDialog extends ComponentDialog {
 
         // Create WaterfallDialog
         this.addDialog(new WaterfallDialog(BOT_PROMPT, [
-            this.checkpidStep.bind(this),
-            this.testStep.bind(this)
-            // this.testStep2.bind(this)
+            this.initializationStep.bind(this),
+            this.testStep0.bind(this),
+            this.testStep1.bind(this),
+            this.testStep2.bind(this)
         ]))
 
         // Set initialDialogId
         this.initialDialogId = BOT_PROMPT
     }
 
-    // Running MainDialog
     async run(turnContext) {
         // Create DialogSet Object
         const dialogSet = new DialogSet(this.dialogStateAccessor)
@@ -40,67 +40,80 @@ class MainDialog extends ComponentDialog {
         // Creates a dialog context
         const dialogContext =  await dialogSet.createContext(turnContext)
 
-        // Create userInfo
-        let userInfo = await this.userProfileAccessor.get(dialogContext.context)
-        await this.userProfileAccessor.set(dialogContext.context, new UserInfo())
-        if (userInfo === undefined) {
-            if (dialogContext.options && dialogContext.options.userInfo) {
-                await this.userProfileAccessor.set(dialogContext.context, dialogContext.options.userInfo);
-            } else {
-                await this.userProfileAccessor.set(dialogContext.context, new UserInfo());
-            }
-        } 
-
         // ContinueDialog
         const result = await dialogContext.continueDialog()
+        console.log("result : ", result)
         if (result.status === DialogTurnStatus.empty){
-
             // BeginDialog
             await dialogContext.beginDialog(MAIN_PROMPT)
         }
     }
 
-    // Check user enter is number or not(default is number)
-    async checkpidStep(stepContext) {
-        let cknum = stepContext.context.activity.text
-        if (isNaN(cknum)) {
-            await stepContext.context.sendActivity("產品編號錯誤")
-            await stepContext.context.sendActivity("請輸入產品編號")
-            await stepContext.context.sendActivities([
-                { type: 'typing' },
-                { type: 'delay', value: 1000 }
-            ]);
-            await stepContext.context.sendActivity("你說你不知道商品編號是什麼意思???")
-            await stepContext.context.sendActivities([
-                { type: 'typing' },
-                { type: 'delay', value: 1000 }
-            ]);
-            await stepContext.context.sendActivity("怪我喔??")
-            await stepContext.context.sendActivities([
-                { type: 'typing' },
-                { type: 'delay', value: 1000 }
-            ]);
-            await stepContext.context.sendActivity("不會去問商家阿!!!")
-            return await stepContext.endDialog()
+    async initializationStep(stepContext) {
+        console.log("initializationStep")
+        let userInfo = await this.userProfileAccessor.get(stepContext.context)
+        await this.userProfileAccessor.set(stepContext.context, new UserInfo())
+        if (userInfo === undefined) {
+            if (stepContext.options && stepContext.options.userInfo) {
+                await this.userProfileAccessor.set(stepContext.context, stepContext.options.userInfo);
+            } else {
+                await this.userProfileAccessor.set(stepContext.context, new UserInfo());
+            }
+        }
+        return await stepContext.next() 
+    }
+
+    async testStep0(stepContext) {
+        console.log("testStep0")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (!userInfo.u_name) {
+            return await stepContext.prompt(TEXT_PROMPT, "請問怎麼稱呼??")
         } else {
-            await stepContext.context.sendActivity("正在搜尋該商品")
-            await stepContext.context.sendActivities([
-                { type: 'typing' },
-                { type: 'delay', value: 1000 }
-            ]);
             return await stepContext.next()
         }
     }
 
-    async testStep(stepContext) {
-        await stepContext.context.sendActivity("WTF???")
-        return await stepContext.endDialog()
+    async testStep1(stepContext) {
+        console.log("testStep1")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (userInfo.u_name === undefined && stepContext.result) {
+            userInfo.u_name = stepContext.result
+        }
+        console.log("userName : ", userInfo.u_name)
+        if (!userInfo.u_age) {
+            await stepContext.context.sendActivity(`${userInfo.u_name}，您好。`)
+            return await stepContext.prompt(NUMBER_PROMPT, "請問您幾歲??")
+        } else {
+            return await stepContext.next()
+        }
     }
 
     async testStep2(stepContext) {
+        console.log("testStep2")
         const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (userInfo.u_age === undefined && stepContext.result) {
+            userInfo.u_age = stepContext.result
+        }
+        console.log("userName : ", userInfo.u_age)
+        if (!userInfo.u_phone) {
+            return await stepContext.prompt(NUMBER_PROMPT, "請問您的連絡電話是??")
+        } else {
+            return await stepContext.next()
+        }
+    }
 
-        return await stepContext.endDialog()
+    async testStep3(stepContext) {
+        console.log("testStep3")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (userInfo.u_phone === undefined && stepContext.result) {
+            userInfo.u_phone = stepContext.result
+        }
+        console.log("userName : ", userInfo.u_phone)
+        if (!userInfo.u_email) {
+            return await stepContext.prompt(TEXT_PROMPT, "請問您的連絡信箱是??")
+        } else {
+            return await stepContext.next()
+        }
     }
 }
 
