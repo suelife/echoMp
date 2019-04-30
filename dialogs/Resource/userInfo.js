@@ -14,14 +14,22 @@ class UserInfo {
     //  purchaser_mail   購買人信箱
     //#endregion
 
-    constructor (u_name, u_age, u_phone, u_email, p_sex, p_single) 
+    constructor (u_name, u_age, u_phone, u_email, 
+                 p_sex, p_sex_1, p_sex_2, p_sex_3, p_sex_4,
+                 p_single, p_single_1, p_single_2) 
     {
         this.u_name = u_name || undefined;
         this.u_age = u_age || undefined;
         this.u_phone = u_phone || undefined;
         this.u_email = u_email || undefined;
         this.p_sex = p_sex || undefined;
+        this.p_sex_1 = p_sex_1 || undefined;
+        this.p_sex_2 = p_sex_2 || undefined;
+        this.p_sex_3 = p_sex_3 || undefined;
+        this.p_sex_4 = p_sex_4 || undefined;
         this.p_single = p_single || undefined;
+        this.p_single_1 = p_single_1 || undefined;
+        this.p_single_2 = p_single_2 || undefined;
     }
 }
 

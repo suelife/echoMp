@@ -1,6 +1,10 @@
 // Import require Package
 const { ComponentDialog, DialogSet, DialogTurnStatus, WaterfallDialog, TextPrompt, NumberPrompt} = require('botbuilder-dialogs');
 const { CardFactory, MessageFactory } = require('botbuilder');
+
+const { MaleDialog } = require("./maleDialog")
+const { FemaleDialog } = require("./femaleDialog")
+
 const { UserInfo } = require('./Resource/userInfo')
 
 // Define the property accessors.
@@ -8,6 +12,8 @@ const BOT_PROMPT = "botPrompt"
 const MAIN_PROMPT = "mainPrompt"
 const TEXT_PROMPT = "textprompt"
 const NUMBER_PROMPT = "numberprompt"
+const MALE_PROMPT = "malePrompt"
+const FEMALE_PROMPT = "femalePrompt"
 
 class MainDialog extends ComponentDialog {
     constructor(dialogStateAccessor, userProfileAccessor){
@@ -21,14 +27,17 @@ class MainDialog extends ComponentDialog {
         this.addDialog(new NumberPrompt(NUMBER_PROMPT))
 
         // Create WaterfallDialog
-        this.addDialog(new WaterfallDialog(BOT_PROMPT, [
+        this.addDialog(new MaleDialog(MALE_PROMPT, this.userProfileAccessor))
+            .addDialog(new FemaleDialog(FEMALE_PROMPT, this.userProfileAccessor))
+            .addDialog(new WaterfallDialog(BOT_PROMPT, [
             this.initializationStep.bind(this),
             this.testStep0.bind(this),
             this.testStep1.bind(this),
             this.testStep2.bind(this),
             this.testStep3.bind(this),
             this.testStep4.bind(this),
-            this.testStep5.bind(this)
+            this.testStep5.bind(this),
+            this.testStep6.bind(this)
         ]))
 
         // Set initialDialogId
@@ -47,7 +56,7 @@ class MainDialog extends ComponentDialog {
         const result = await dialogContext.continueDialog()
         if (result.status === DialogTurnStatus.empty){
             // BeginDialog
-            await dialogContext.beginDialog(MAIN_PROMPT)
+            await dialogContext.beginDialog(this.id)
         }
     }
 
@@ -143,19 +152,61 @@ class MainDialog extends ComponentDialog {
 
         switch (userInfo.p_sex) {
             case "男生":
-                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
-                return await stepContext.endDialog()
-                case "女生":
-                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
-                return await stepContext.endDialog()
-                case "不好說":
-                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
-                return await stepContext.endDialog()
+                // await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.beginDialog(MALE_PROMPT)
+            case "女生":
+                // await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.beginDialog(FEMALE_PROMPT)
+            case "不好說":
+                // await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.next()
             default:
                 await stepContext.context.sendActivity(`${userInfo.u_name}，為什麼亂打`)
                 return await stepContext.endDialog();
         }
     }
+    
+    async testStep6(stepContext) {
+        console.log("testStep6")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+
+        await stepContext.context.sendActivity(`你的姓名: ${userInfo.u_name}`)
+        await stepContext.context.sendActivity(`你的年齡: ${userInfo.u_age}`)   
+        await stepContext.context.sendActivity(`你的電話: ${userInfo.u_phone}`)
+        await stepContext.context.sendActivity(`你的信箱: ${userInfo.u_email}`)
+        await stepContext.context.sendActivity(`你的性別: ${userInfo.p_sex}`)
+        
+        switch (userInfo.p_sex) {
+            case "男生":
+                await stepContext.context.sendActivity(`你的性向: ${userInfo.p_sex_1}`)
+                await stepContext.context.sendActivity(`你喜歡吃: ${userInfo.p_sex_2}`)
+                return await stepContext.endDialog()
+            case "女生":
+                await stepContext.context.sendActivity(`妳是否想生小孩: ${userInfo.p_sex_3}`)
+                await stepContext.context.sendActivity(`妳的興趣: ${userInfo.p_sex_4}`)
+                return await stepContext.endDialog()
+            case "不好說":
+                await stepContext.context.sendActivity(`我不知道該跟你說什麼...`)
+                return await stepContext.endDialog()
+            default:
+                return await stepContext.endDialog()
+        }
+    }
+
+    // async testStep7(stepContext) {
+    //     console.log("testStep7")
+    //     const userInfo = await this.userProfileAccessor.get(stepContext.context)
+    //     if (userInfo.p_sin === undefined && stepContext.result) {
+    //         userInfo.u_email = stepContext.result
+    //     }
+    //     console.log("useremail : ", userInfo.u_email)
+    //     const sexCard = MessageFactory.suggestedActions(["男生", "女生", "不好說"], "請問您的性別是?")
+    //     if (!userInfo.p_sex) {
+    //         return await stepContext.prompt(TEXT_PROMPT, sexCard)
+    //     } else {
+    //         return await stepContext.next()
+    //     }
+    // }
 }
 
 module.exports.MainDialog = MainDialog
