@@ -25,7 +25,10 @@ class MainDialog extends ComponentDialog {
             this.initializationStep.bind(this),
             this.testStep0.bind(this),
             this.testStep1.bind(this),
-            this.testStep2.bind(this)
+            this.testStep2.bind(this),
+            this.testStep3.bind(this),
+            this.testStep4.bind(this),
+            this.testStep5.bind(this)
         ]))
 
         // Set initialDialogId
@@ -42,7 +45,6 @@ class MainDialog extends ComponentDialog {
 
         // ContinueDialog
         const result = await dialogContext.continueDialog()
-        console.log("result : ", result)
         if (result.status === DialogTurnStatus.empty){
             // BeginDialog
             await dialogContext.beginDialog(MAIN_PROMPT)
@@ -94,7 +96,7 @@ class MainDialog extends ComponentDialog {
         if (userInfo.u_age === undefined && stepContext.result) {
             userInfo.u_age = stepContext.result
         }
-        console.log("userName : ", userInfo.u_age)
+        console.log("userage : ", userInfo.u_age)
         if (!userInfo.u_phone) {
             return await stepContext.prompt(NUMBER_PROMPT, "請問您的連絡電話是??")
         } else {
@@ -108,11 +110,50 @@ class MainDialog extends ComponentDialog {
         if (userInfo.u_phone === undefined && stepContext.result) {
             userInfo.u_phone = stepContext.result
         }
-        console.log("userName : ", userInfo.u_phone)
+        console.log("userphone : ", userInfo.u_phone)
         if (!userInfo.u_email) {
             return await stepContext.prompt(TEXT_PROMPT, "請問您的連絡信箱是??")
         } else {
             return await stepContext.next()
+        }
+    }
+    
+    async testStep4(stepContext) {
+        console.log("testStep4")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (userInfo.u_email === undefined && stepContext.result) {
+            userInfo.u_email = stepContext.result
+        }
+        console.log("useremail : ", userInfo.u_email)
+        const sexCard = MessageFactory.suggestedActions(["男生", "女生", "不好說"], "請問您的性別是?")
+        if (!userInfo.p_sex) {
+            return await stepContext.prompt(TEXT_PROMPT, sexCard)
+        } else {
+            return await stepContext.next()
+        }
+    }
+    
+    async testStep5(stepContext) {
+        console.log("testStep5")
+        const userInfo = await this.userProfileAccessor.get(stepContext.context)
+        if (userInfo.p_sex === undefined && stepContext.result) {
+            userInfo.p_sex = stepContext.result
+        }
+        console.log("usersex : ", userInfo.p_sex)
+
+        switch (userInfo.p_sex) {
+            case "男生":
+                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.endDialog()
+                case "女生":
+                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.endDialog()
+                case "不好說":
+                await stepContext.context.sendActivity(`${userInfo.u_name}，是${userInfo.p_sex}`)
+                return await stepContext.endDialog()
+            default:
+                await stepContext.context.sendActivity(`${userInfo.u_name}，為什麼亂打`)
+                return await stepContext.endDialog();
         }
     }
 }
