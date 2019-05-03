@@ -16,7 +16,9 @@ class UserInfo {
 
     constructor (u_name, u_age, u_phone, u_email, 
                  p_sex, p_sex_1, p_sex_2, p_sex_3, p_sex_4,
-                 p_single, p_single_1, p_single_2) 
+                 p_single, p_single_1, p_single_2, 
+                 p_single_3_1, p_single_3_2, p_single_3_3, 
+                 p_single_4) 
     {
         this.u_name = u_name || undefined;
         this.u_age = u_age || undefined;
@@ -30,6 +32,13 @@ class UserInfo {
         this.p_single = p_single || undefined;
         this.p_single_1 = p_single_1 || undefined;
         this.p_single_2 = p_single_2 || undefined;
+        this.p_single_3_1 = p_single_3_1 || undefined;
+        this.p_single_3_2 = p_single_3_2 || undefined;
+        this.p_single_3_3 = p_single_3_3 || undefined;
+        this.p_single_4 = p_single_4 || undefined;
+        // this.f_1 = f_1 || undefined;
+        // this.f_2 = f_2 || undefined;
+        // this.s = s || undefined;
     }
 }
 
